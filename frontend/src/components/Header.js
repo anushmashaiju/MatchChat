@@ -8,10 +8,13 @@ const Header = () => {
   return (
     <header className="bg-blue-500 text-white p-4">
       <nav className="flex justify-between">
-        <h1 className="text-xl font-bold">MERN Match App</h1>
-        <ul className="flex space-x-4">
+        <h1 className="text-xl font-bold">Match and Chat App</h1>
+        <ul className="flex space-x-4 items-center">
           {user ? (
             <>
+              <li>
+                <span className="mr-2 font-bold text-xl">Welcome {user.username}!</span> {/* Display Username */}
+              </li>
               <li>
                 <Link to="/dashboard" className="hover:underline">
                   Dashboard

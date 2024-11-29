@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
+import io from "socket.io-client"; // Assuming Socket.io client is set up
 
 const Matches = () => {
   const [matches, setMatches] = useState([]);
@@ -9,6 +10,8 @@ const Matches = () => {
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
+    const socket = io("http://localhost:5002"); // Replace with your Socket.io server URL
+
     const fetchMatches = async () => {
       try {
         const response = await axios.get(
@@ -28,37 +31,47 @@ const Matches = () => {
       } catch (err) {
         console.error(err);
       } finally {
-        setLoading(false); // Set loading to false once data is fetched
+        setLoading(false);
       }
     };
 
     fetchMatches();
+
+    // Listen for real-time updates on matches
+    socket.on("mutualMatchUpdate", (updatedMatch) => {
+      setMutualMatches((prev) => ({
+        ...prev,
+        [updatedMatch._id]: updatedMatch.isMutual,
+      }));
+    });
+
+    return () => {
+      socket.disconnect(); // Cleanup socket on component unmount
+    };
   }, [user]);
 
   const checkMutualMatch = async (otherUserId) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/matches/check",
+        "http://localhost:5002/api/matches/check",
         {
           uid1: user._id,
           uid2: otherUserId,
         }
       );
-      if (response.data.match === false) return response.data.match;
-      else return true;
+      return response.data.match !== false;
     } catch (err) {
       console.error(err);
-      return false; // Return false if there's an error
+      return false;
     }
   };
 
   const handleChat = (chatid) => {
-    window.location.href = `/chat/${chatid}`; // Redirect to the chat page
+    window.location.href = `/chat/${chatid}`;
   };
 
-  // Show loading state while fetching matches
   if (loading) {
-    return <div>Loading...</div>; // You can style this as needed
+    return <div>Loading...</div>;
   }
 
   return (

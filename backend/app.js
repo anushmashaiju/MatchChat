@@ -2,6 +2,9 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const http = require("http");
+const { Server } = require("socket.io");
+const Chat = require("./models/Chat");
 
 dotenv.config();
 
@@ -18,9 +21,44 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log("MongoDB connection error:", err));
 
+// Use routes
 app.use("/api/users", userRoutes);
 app.use("/api/matches", matchRoutes);
 app.use("/api/chats", chatRoutes);
 
+// Create an HTTP server and set up Socket.io
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log("A user connected");
+
+  // Listen for sendMessage event
+  socket.on("sendMessage", async (msg) => {
+    const { chatid, sender, message } = msg;
+
+    // Save the message to the database
+    let chat = await Chat.findOne({ chatid });
+    if (!chat) {
+      chat = new Chat({ chatid, chats: [{ sender, message }] });
+    } else {
+      chat.chats.push({ sender, message });
+    }
+    await chat.save();
+
+    // Broadcast the message to other users in the chat
+    io.emit("receiveMessage", { sender: { _id: sender, username: msg.senderUsername }, message });
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected");
+  });
+});
+// Start the server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

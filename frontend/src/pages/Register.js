@@ -37,10 +37,16 @@ const Register = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div
+    className="flex justify-center items-center h-screen bg-cover bg-center"
+    style={{ backgroundImage: "url('images/partnership_symbol.png')" }}
+  >
+
+  {/* Right Side with Form */}
+  <div className="flex justify-center items-center w-full md:w-1/2">
       <form
         onSubmit={handleSubmit}
-        className="w-96 bg-white p-6 rounded shadow-md"
+        className="w-96 bg-transperent p-6 rounded shadow-md"
       >
         <h2 className="text-2xl font-bold mb-6">Register</h2>
         <div className="mb-4">
@@ -74,7 +80,7 @@ const Register = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700">Description</label>
+          <label className="block text-gray-700">Place</label>
           <input
             type="text"
             className="w-full px-3 py-2 border rounded"
@@ -85,7 +91,7 @@ const Register = () => {
         </div>
         <div className="mb-4">
           <label className="block text-gray-700">
-            Skills (comma-separated)
+            Job
           </label>
           <input
             type="text"
@@ -114,6 +120,8 @@ const Register = () => {
           Register
         </button>
       </form>
+      
+    </div>
     </div>
   );
 };

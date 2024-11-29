@@ -29,10 +29,13 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div
+    className="flex justify-center items-center h-screen bg-cover bg-center"
+    style={{ backgroundImage: "url('images/partnership_symbol.png')" }}
+  >
       <form
         onSubmit={handleSubmit}
-        className="w-96 bg-white p-6 rounded shadow-md"
+        className="w-96 bg-transperent p-6 rounded shadow-md"
       >
         <h2 className="text-2xl font-bold mb-6">Login</h2>
         <div className="mb-4">

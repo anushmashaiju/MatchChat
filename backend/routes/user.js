@@ -5,8 +5,7 @@ const router = express.Router();
 
 // Register a new user
 router.post("/register", async (req, res) => {
-  const { email, password, username, description, skills, interests } =
-    req.body;
+  const { email, password, username,  place, job, interests } = req.body;
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -14,8 +13,8 @@ router.post("/register", async (req, res) => {
       email,
       password: hashedPassword,
       username,
-      description,
-      skills,
+      place,
+      job,
       interests,
     });
 
@@ -63,7 +62,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Add a match
+// Add a match when clicked on match
 router.post("/add-match/:id", async (req, res) => {
   const { uid } = req.body;
   const { id } = req.params;
